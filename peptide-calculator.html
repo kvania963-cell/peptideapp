@@ -1,0 +1,239 @@
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Peptide">
+<link rel="apple-touch-icon" href="logo.png"><!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peptide Calculator</title>
+
+<style>
+body {
+  margin:0;
+  font-family:-apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  background:linear-gradient(135deg,#020617,#0f172a,#064e3b);
+  color:white;
+}
+
+.container {
+  max-width:430px;
+  margin:auto;
+  padding:20px;
+}
+
+.logo-wrap {
+  text-align:center;
+  margin-top:20px;
+  margin-bottom:15px;
+}
+
+.logo {
+  width:140px;
+  border-radius:28px;
+  animation: floatLogo 3s ease-in-out infinite, glowLogo 2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 18px #22c55e);
+}
+
+@keyframes floatLogo {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.04); }
+  100% { transform: translateY(0px) scale(1); }
+}
+
+@keyframes glowLogo {
+  from { filter: drop-shadow(0 0 8px #22c55e); }
+  to { filter: drop-shadow(0 0 28px #22c55e); }
+}
+
+h1 {
+  text-align:center;
+  margin:10px 0 0;
+  font-size:30px;
+  letter-spacing:1px;
+}
+
+.subtitle {
+  text-align:center;
+  color:#86efac;
+  margin-top:5px;
+  font-size:14px;
+  letter-spacing:2px;
+}
+
+.card {
+  background:rgba(15,23,42,0.88);
+  border:1px solid rgba(34,197,94,0.25);
+  border-radius:22px;
+  padding:20px;
+  margin-top:18px;
+  box-shadow:0 0 25px rgba(34,197,94,0.12);
+}
+
+label {
+  display:block;
+  margin-top:15px;
+  color:#5eead4;
+  font-weight:bold;
+  font-size:14px;
+}
+
+select,input,button {
+  width:100%;
+  padding:14px;
+  margin-top:8px;
+  border-radius:14px;
+  border:1px solid rgba(94,234,212,0.25);
+  font-size:17px;
+  box-sizing:border-box;
+}
+
+input, select {
+  background:#020617;
+  color:white;
+}
+
+button {
+  background:linear-gradient(135deg,#22c55e,#84cc16);
+  color:black;
+  font-weight:bold;
+  margin-top:20px;
+  cursor:pointer;
+  border:none;
+  font-size:18px;
+}
+
+button:active {
+  transform:scale(0.98);
+}
+
+.result {
+  margin-top:18px;
+  line-height:1.8;
+  background:#020617;
+  padding:16px;
+  border-radius:18px;
+  border:1px solid rgba(94,234,212,0.2);
+}
+
+.big {
+  font-size:26px;
+  color:#4ade80;
+  font-weight:bold;
+}
+
+.footer {
+  text-align:center;
+  font-size:12px;
+  opacity:0.6;
+  margin-top:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo-wrap">
+    <img src="logo.png" class="logo" alt="Peptide logo">
+    <h1>Peptide Calculator</h1>
+    <div class="subtitle">WATER • DOSE • UNITS</div>
+  </div>
+
+  <div class="card">
+
+    <label>Preset</label>
+    <select id="preset">
+      <option value="">Custom</option>
+      <option value="10-1">10mg / 1mg dose</option>
+      <option value="15-2">15mg / 2mg dose</option>
+      <option value="50-5">50mg / 5mg dose</option>
+      <option value="100-2">100mg / 2mg dose</option>
+    </select>
+
+    <label>Total peptide amount (mg)</label>
+    <input id="total" type="number" step="0.01" placeholder="Example: 15">
+
+    <label>Desired dose (mg)</label>
+    <input id="dose" type="number" step="0.01" placeholder="Example: 2">
+
+    <label>Preferred syringe amount — U-100 units</label>
+    <select id="units">
+      <option value="10">10 units</option>
+      <option value="15">15 units</option>
+      <option value="20" selected>20 units</option>
+      <option value="25">25 units</option>
+      <option value="30">30 units</option>
+      <option value="40">40 units</option>
+      <option value="50">50 units</option>
+    </select>
+
+    <button onclick="calc()">🧮 Calculate</button>
+
+    <div class="result" id="result">
+      Enter values and press Calculate.
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Educational use only. Not medical advice.
+  </div>
+
+</div>
+
+<script>
+document.getElementById("preset").addEventListener("change", function(){
+  let val = this.value;
+  if(val){
+    let parts = val.split("-");
+    document.getElementById("total").value = parts[0];
+    document.getElementById("dose").value = parts[1];
+  }
+});
+
+function calc(){
+  let total = parseFloat(document.getElementById("total").value);
+  let dose = parseFloat(document.getElementById("dose").value);
+  let units = parseFloat(document.getElementById("units").value);
+
+  if(!total || !dose || !units || total <= 0 || dose <= 0 || units <= 0){
+    document.getElementById("result").innerHTML = "Please enter valid numbers.";
+    return;
+  }
+
+  if(dose > total){
+    document.getElementById("result").innerHTML = "Dose cannot be bigger than total peptide amount.";
+    return;
+  }
+
+  let doseMl = units / 100;
+  let concentration = dose / doseMl;
+  let water = total / concentration;
+  let doses = total / dose;
+
+  localStorage.setItem("total", total);
+  localStorage.setItem("dose", dose);
+  localStorage.setItem("units", units);
+
+  document.getElementById("result").innerHTML =
+    "💧 Water to add: <span class='big'>" + water.toFixed(2) + " ml</span><br>" +
+    "📊 Concentration: " + concentration.toFixed(2) + " mg/ml<br>" +
+    "💉 Each dose: " + dose + " mg<br>" +
+    "🧪 Syringe amount: " + doseMl.toFixed(2) + " ml / " + units + " units<br>" +
+    "📦 Total doses: " + doses.toFixed(1);
+}
+
+window.onload = function(){
+  if(localStorage.getItem("total")){
+    document.getElementById("total").value = localStorage.getItem("total");
+    document.getElementById("dose").value = localStorage.getItem("dose");
+    document.getElementById("units").value = localStorage.getItem("units") || 20;
+  }
+}
+</script>
+
+</body>
+</html>
