@@ -1,132 +1,125 @@
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Peptide">
-<link rel="apple-touch-icon" href="logo.png"><!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peptide Calculator</title>
+<title>Peptide Smart Pro</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Peptide Pro">
+<link rel="apple-touch-icon" href="logo.png">
 
 <style>
-body {
+body{
   margin:0;
-  font-family:-apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;
   background:linear-gradient(135deg,#020617,#0f172a,#064e3b);
   color:white;
 }
-
-.container {
+.container{
   max-width:430px;
   margin:auto;
   padding:20px;
 }
-
-.logo-wrap {
+.logo-wrap{
   text-align:center;
-  margin-top:20px;
-  margin-bottom:15px;
+  margin-top:22px;
 }
-
-.logo {
-  width:140px;
-  border-radius:28px;
-  animation: floatLogo 3s ease-in-out infinite, glowLogo 2s ease-in-out infinite alternate;
-  filter: drop-shadow(0 0 18px #22c55e);
+.logo{
+  width:125px;
+  border-radius:25px;
+  animation:float 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px #22c55e);
 }
-
-@keyframes floatLogo {
-  0% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-10px) scale(1.04); }
-  100% { transform: translateY(0px) scale(1); }
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-8px)}
+  100%{transform:translateY(0)}
 }
-
-@keyframes glowLogo {
-  from { filter: drop-shadow(0 0 8px #22c55e); }
-  to { filter: drop-shadow(0 0 28px #22c55e); }
-}
-
-h1 {
+h1{
+  margin:12px 0 0;
+  font-size:31px;
   text-align:center;
-  margin:10px 0 0;
-  font-size:30px;
-  letter-spacing:1px;
 }
-
-.subtitle {
+.subtitle{
   text-align:center;
   color:#86efac;
-  margin-top:5px;
-  font-size:14px;
   letter-spacing:2px;
+  font-size:13px;
 }
-
-.card {
-  background:rgba(15,23,42,0.88);
-  border:1px solid rgba(34,197,94,0.25);
+.card{
+  background:rgba(15,23,42,.9);
+  border:1px solid rgba(34,197,94,.25);
   border-radius:22px;
   padding:20px;
   margin-top:18px;
-  box-shadow:0 0 25px rgba(34,197,94,0.12);
+  box-shadow:0 0 25px rgba(34,197,94,.12);
 }
-
-label {
+label{
   display:block;
   margin-top:15px;
   color:#5eead4;
   font-weight:bold;
   font-size:14px;
 }
-
-select,input,button {
+input,select,button{
   width:100%;
   padding:14px;
   margin-top:8px;
   border-radius:14px;
-  border:1px solid rgba(94,234,212,0.25);
+  border:1px solid rgba(94,234,212,.25);
   font-size:17px;
   box-sizing:border-box;
 }
-
-input, select {
+input,select{
   background:#020617;
   color:white;
 }
-
-button {
+button{
   background:linear-gradient(135deg,#22c55e,#84cc16);
   color:black;
   font-weight:bold;
-  margin-top:20px;
-  cursor:pointer;
   border:none;
-  font-size:18px;
+  cursor:pointer;
 }
-
-button:active {
-  transform:scale(0.98);
+button:active{
+  transform:scale(.98);
 }
-
-.result {
+.secondary{
+  background:#0f172a;
+  color:#86efac;
+  border:1px solid rgba(34,197,94,.35);
+}
+.result{
   margin-top:18px;
   line-height:1.8;
   background:#020617;
   padding:16px;
   border-radius:18px;
-  border:1px solid rgba(94,234,212,0.2);
+  border:1px solid rgba(94,234,212,.2);
 }
-
-.big {
-  font-size:26px;
+.big{
+  font-size:27px;
   color:#4ade80;
   font-weight:bold;
 }
-
-.footer {
+.row{
+  display:flex;
+  gap:10px;
+}
+.row button{
+  flex:1;
+}
+.history{
+  font-size:14px;
+  opacity:.9;
+}
+.footer{
   text-align:center;
   font-size:12px;
-  opacity:0.6;
+  opacity:.65;
   margin-top:15px;
 }
 </style>
@@ -138,7 +131,7 @@ button:active {
 
   <div class="logo-wrap">
     <img src="logo.png" class="logo" alt="Peptide logo">
-    <h1>Peptide Calculator</h1>
+    <h1>Peptide Smart Pro</h1>
     <div class="subtitle">WATER • DOSE • UNITS</div>
   </div>
 
@@ -147,8 +140,10 @@ button:active {
     <label>Preset</label>
     <select id="preset">
       <option value="">Custom</option>
+      <option value="5-0.5">5mg / 0.5mg dose</option>
       <option value="10-1">10mg / 1mg dose</option>
       <option value="15-2">15mg / 2mg dose</option>
+      <option value="30-2">30mg / 2mg dose</option>
       <option value="50-5">50mg / 5mg dose</option>
       <option value="100-2">100mg / 2mg dose</option>
     </select>
@@ -159,8 +154,15 @@ button:active {
     <label>Desired dose (mg)</label>
     <input id="dose" type="number" step="0.01" placeholder="Example: 2">
 
-    <label>Preferred syringe amount — U-100 units</label>
+    <label>Mode</label>
+    <select id="mode">
+      <option value="smart" selected>Smart recommended units</option>
+      <option value="manual">Manual units</option>
+    </select>
+
+    <label>Manual U-100 syringe units</label>
     <select id="units">
+      <option value="5">5 units</option>
       <option value="10">10 units</option>
       <option value="15">15 units</option>
       <option value="20" selected>20 units</option>
@@ -172,10 +174,20 @@ button:active {
 
     <button onclick="calc()">🧮 Calculate</button>
 
+    <div class="row">
+      <button class="secondary" onclick="copyResult()">Copy Result</button>
+      <button class="secondary" onclick="clearAll()">Clear</button>
+    </div>
+
     <div class="result" id="result">
       Enter values and press Calculate.
     </div>
 
+  </div>
+
+  <div class="card">
+    <label>Last Calculations</label>
+    <div class="history" id="history">No history yet.</div>
   </div>
 
   <div class="footer">
@@ -185,6 +197,8 @@ button:active {
 </div>
 
 <script>
+let lastText = "";
+
 document.getElementById("preset").addEventListener("change", function(){
   let val = this.value;
   if(val){
@@ -194,12 +208,22 @@ document.getElementById("preset").addEventListener("change", function(){
   }
 });
 
+function smartUnits(dose){
+  if(dose <= 0.25) return 5;
+  if(dose <= 0.5) return 10;
+  if(dose <= 1) return 15;
+  if(dose <= 2) return 20;
+  if(dose <= 5) return 30;
+  return 40;
+}
+
 function calc(){
   let total = parseFloat(document.getElementById("total").value);
   let dose = parseFloat(document.getElementById("dose").value);
+  let mode = document.getElementById("mode").value;
   let units = parseFloat(document.getElementById("units").value);
 
-  if(!total || !dose || !units || total <= 0 || dose <= 0 || units <= 0){
+  if(!total || !dose || total <= 0 || dose <= 0){
     document.getElementById("result").innerHTML = "Please enter valid numbers.";
     return;
   }
@@ -209,21 +233,76 @@ function calc(){
     return;
   }
 
+  if(mode === "smart"){
+    units = smartUnits(dose);
+  }
+
   let doseMl = units / 100;
   let concentration = dose / doseMl;
   let water = total / concentration;
   let doses = total / dose;
 
-  localStorage.setItem("total", total);
-  localStorage.setItem("dose", dose);
-  localStorage.setItem("units", units);
+  lastText =
+    "Water to add: " + water.toFixed(2) + " ml\n" +
+    "Concentration: " + concentration.toFixed(2) + " mg/ml\n" +
+    "Each dose: " + dose + " mg\n" +
+    "Syringe amount: " + doseMl.toFixed(2) + " ml / " + units + " units\n" +
+    "Total doses: " + doses.toFixed(1);
 
   document.getElementById("result").innerHTML =
     "💧 Water to add: <span class='big'>" + water.toFixed(2) + " ml</span><br>" +
     "📊 Concentration: " + concentration.toFixed(2) + " mg/ml<br>" +
     "💉 Each dose: " + dose + " mg<br>" +
     "🧪 Syringe amount: " + doseMl.toFixed(2) + " ml / " + units + " units<br>" +
-    "📦 Total doses: " + doses.toFixed(1);
+    "📦 Total doses: " + doses.toFixed(1) + "<br>" +
+    "⚙️ Mode: " + (mode === "smart" ? "Smart" : "Manual");
+
+  localStorage.setItem("total", total);
+  localStorage.setItem("dose", dose);
+  localStorage.setItem("units", units);
+  localStorage.setItem("lastResult", lastText);
+
+  saveHistory(lastText);
+  loadHistory();
+}
+
+function saveHistory(text){
+  let history = JSON.parse(localStorage.getItem("history") || "[]");
+  history.unshift(text);
+  history = history.slice(0,5);
+  localStorage.setItem("history", JSON.stringify(history));
+}
+
+function loadHistory(){
+  let history = JSON.parse(localStorage.getItem("history") || "[]");
+  if(history.length === 0){
+    document.getElementById("history").innerHTML = "No history yet.";
+    return;
+  }
+
+  document.getElementById("history").innerHTML = history.map((item, index) =>
+    "<b>#" + (index + 1) + "</b><br>" + item.replaceAll("\n","<br>") + "<br><br>"
+  ).join("");
+}
+
+function copyResult(){
+  if(!lastText){
+    lastText = localStorage.getItem("lastResult") || "";
+  }
+
+  if(!lastText){
+    alert("No result to copy.");
+    return;
+  }
+
+  navigator.clipboard.writeText(lastText);
+  alert("Result copied.");
+}
+
+function clearAll(){
+  document.getElementById("total").value = "";
+  document.getElementById("dose").value = "";
+  document.getElementById("result").innerHTML = "Enter values and press Calculate.";
 }
 
 window.onload = function(){
@@ -232,6 +311,7 @@ window.onload = function(){
     document.getElementById("dose").value = localStorage.getItem("dose");
     document.getElementById("units").value = localStorage.getItem("units") || 20;
   }
+  loadHistory();
 }
 </script>
 
