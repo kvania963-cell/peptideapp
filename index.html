@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Peptide Smart Pro">
 <link rel="apple-touch-icon" href="logo.png">
 
-<link rel="manifest" href="manifest.json?v=4">
+<link rel="manifest" href="manifest.json?v=5">
 <meta name="theme-color" content="#0f172a">
 
 <style>
@@ -35,23 +35,12 @@ body{
   filter:drop-shadow(0 0 20px #22c55e);
 }
 @keyframes float{
-  0%{transform:translateY(0)}
   50%{transform:translateY(-8px)}
-  100%{transform:translateY(0)}
 }
-h1{
-  text-align:center;
-  margin:10px 0 0;
-}
-.subtitle{
-  text-align:center;
-  color:#86efac;
-  letter-spacing:2px;
-  font-size:13px;
-}
+h1{text-align:center;margin:10px 0 0}
+.subtitle{text-align:center;color:#86efac;font-size:13px;letter-spacing:2px}
 .card{
   background:rgba(15,23,42,.9);
-  border:1px solid rgba(34,197,94,.25);
   border-radius:22px;
   padding:20px;
   margin-top:18px;
@@ -60,29 +49,22 @@ label{
   display:block;
   margin-top:15px;
   color:#5eead4;
-  font-weight:bold;
 }
 input,select,button{
   width:100%;
   padding:14px;
   margin-top:8px;
   border-radius:14px;
-  border:1px solid rgba(94,234,212,.25);
+  border:none;
 }
-input,select{
-  background:#020617;
-  color:white;
-}
+input,select{background:#020617;color:white}
 button{
   background:linear-gradient(135deg,#22c55e,#84cc16);
-  color:black;
   font-weight:bold;
-  border:none;
 }
 .secondary{
   background:#0f172a;
   color:#86efac;
-  border:1px solid rgba(34,197,94,.35);
 }
 .result{
   margin-top:18px;
@@ -90,18 +72,9 @@ button{
   padding:16px;
   border-radius:18px;
 }
-.row{
-  display:flex;
-  gap:10px;
-}
-.row button{
-  flex:1;
-}
-.history{
-  margin-top:10px;
-  font-size:13px;
-  opacity:0.9;
-}
+.row{display:flex;gap:10px}
+.row button{flex:1}
+.history{font-size:13px;margin-top:10px}
 </style>
 </head>
 
@@ -117,19 +90,30 @@ button{
 
 <div class="card">
 
+<label>Preset</label>
+<select id="preset">
+<option value="">Custom</option>
+<option value="5">5 mg</option>
+<option value="10">10 mg</option>
+<option value="15">15 mg</option>
+<option value="30">30 mg</option>
+<option value="50">50 mg</option>
+<option value="100">100 mg</option>
+</select>
+
 <label>Total peptide (mg)</label>
-<input id="total" type="number" placeholder="15">
+<input id="total" type="number">
 
 <label>Desired dose (mg)</label>
-<input id="dose" type="number" placeholder="2">
+<input id="dose" type="number">
 
 <label>Mode</label>
 <select id="mode">
-<option value="smart">Smart recommended units</option>
+<option value="smart">Smart</option>
 <option value="manual">Manual</option>
 </select>
 
-<label>Units (U-100)</label>
+<label>Units</label>
 <select id="units">
 <option value="10">10</option>
 <option value="20" selected>20</option>
@@ -137,7 +121,7 @@ button{
 <option value="40">40</option>
 </select>
 
-<button onclick="calc()">🧮 Calculate</button>
+<button onclick="calc()">Calculate</button>
 
 <div class="row">
 <button class="secondary" onclick="copyResult()">Copy</button>
@@ -145,19 +129,24 @@ button{
 </div>
 
 <div class="result" id="result">
-Enter values and press Calculate.
+Enter values and press Calculate
 </div>
 
 </div>
 
 <div class="card">
-<label>Last Calculations</label>
+<label>History</label>
 <div id="history" class="history">No history yet.</div>
 </div>
 
 </div>
 
 <script>
+document.getElementById("preset").onchange=function(){
+  let v=this.value;
+  if(v) total.value=v;
+};
+
 function smartUnits(d){
   if(d<=0.5) return 10;
   if(d<=1) return 15;
@@ -166,52 +155,53 @@ function smartUnits(d){
   return 40;
 }
 
+function suggestWater(total){
+  if(total<=5) return 0.5;
+  if(total<=10) return 1;
+  if(total<=20) return 2;
+  if(total<=50) return 2;
+  return 3;
+}
+
 let last="";
 
 function calc(){
-  let total=parseFloat(totalEl.value);
-  let dose=parseFloat(doseEl.value);
-  let mode=modeEl.value;
-  let units=parseFloat(unitsEl.value);
+  let t=parseFloat(total.value);
+  let d=parseFloat(dose.value);
+  let m=mode.value;
+  let u=parseFloat(units.value);
 
-  if(!total||!dose){
-    result.innerHTML="Enter valid values";
-    return;
-  }
+  if(!t||!d){result.innerHTML="Enter values";return;}
 
-  if(mode==="smart"){
-    units=smartUnits(dose);
-  }
+  if(m==="smart"){u=smartUnits(d);}
 
-  let ml=units/100;
-  let conc=dose/ml;
-  let water=total/conc;
+  let ml=u/100;
+  let conc=d/ml;
+  let water=t/conc;
+  let suggested=suggestWater(t);
 
-  last=`Water: ${water.toFixed(2)} ml | Dose: ${ml.toFixed(2)} ml (${units}u)`;
+  last=`Water: ${water.toFixed(2)} ml | Dose: ${ml.toFixed(2)} ml (${u}u)`;
 
   result.innerHTML=
-    "💧 Water: "+water.toFixed(2)+" ml<br>"+
+    "💧 Exact water: "+water.toFixed(2)+" ml<br>"+
+    "🧠 Suggested water: "+suggested+" ml<br>"+
     "📊 Concentration: "+conc.toFixed(2)+" mg/ml<br>"+
-    "💉 Dose: "+ml.toFixed(2)+" ml ("+units+" units)";
+    "💉 Dose: "+ml.toFixed(2)+" ml ("+u+" units)";
 
   saveHistory(last);
   loadHistory();
 }
 
-function saveHistory(text){
+function saveHistory(x){
   let h=JSON.parse(localStorage.getItem("h")||"[]");
-  h.unshift(text);
+  h.unshift(x);
   h=h.slice(0,5);
   localStorage.setItem("h",JSON.stringify(h));
 }
 
 function loadHistory(){
   let h=JSON.parse(localStorage.getItem("h")||"[]");
-  if(h.length===0){
-    historyEl.innerHTML="No history yet.";
-    return;
-  }
-  historyEl.innerHTML=h.map((x,i)=>"#"+(i+1)+"<br>"+x).join("<br><br>");
+  history.innerHTML=h.length?h.map((x,i)=>"#"+(i+1)+"<br>"+x).join("<br><br>"):"No history yet.";
 }
 
 function copyResult(){
@@ -219,17 +209,10 @@ function copyResult(){
 }
 
 function clearAll(){
-  totalEl.value="";
-  doseEl.value="";
-  result.innerHTML="Enter values and press Calculate.";
+  total.value="";
+  dose.value="";
+  result.innerHTML="Enter values and press Calculate";
 }
-
-const totalEl=document.getElementById("total");
-const doseEl=document.getElementById("dose");
-const modeEl=document.getElementById("mode");
-const unitsEl=document.getElementById("units");
-const result=document.getElementById("result");
-const historyEl=document.getElementById("history");
 
 window.onload=loadHistory;
 </script>
