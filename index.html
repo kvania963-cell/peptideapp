@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Peptide Smart Pro">
 <link rel="apple-touch-icon" href="logo.png">
 
-<link rel="manifest" href="manifest.json?v=3">
+<link rel="manifest" href="manifest.json?v=4">
 <meta name="theme-color" content="#0f172a">
 
 <style>
@@ -42,7 +42,6 @@ body{
 h1{
   text-align:center;
   margin:10px 0 0;
-  font-size:30px;
 }
 .subtitle{
   text-align:center;
@@ -56,7 +55,6 @@ h1{
   border-radius:22px;
   padding:20px;
   margin-top:18px;
-  box-shadow:0 0 25px rgba(34,197,94,.12);
 }
 label{
   display:block;
@@ -70,7 +68,6 @@ input,select,button{
   margin-top:8px;
   border-radius:14px;
   border:1px solid rgba(94,234,212,.25);
-  font-size:16px;
 }
 input,select{
   background:#020617;
@@ -89,7 +86,6 @@ button{
 }
 .result{
   margin-top:18px;
-  line-height:1.8;
   background:#020617;
   padding:16px;
   border-radius:18px;
@@ -100,6 +96,11 @@ button{
 }
 .row button{
   flex:1;
+}
+.history{
+  margin-top:10px;
+  font-size:13px;
+  opacity:0.9;
 }
 </style>
 </head>
@@ -149,6 +150,11 @@ Enter values and press Calculate.
 
 </div>
 
+<div class="card">
+<label>Last Calculations</label>
+<div id="history" class="history">No history yet.</div>
+</div>
+
 </div>
 
 <script>
@@ -181,19 +187,35 @@ function calc(){
   let conc=dose/ml;
   let water=total/conc;
 
-  last=`Water: ${water.toFixed(2)} ml
-Concentration: ${conc.toFixed(2)} mg/ml
-Dose: ${ml.toFixed(2)} ml (${units} units)`;
+  last=`Water: ${water.toFixed(2)} ml | Dose: ${ml.toFixed(2)} ml (${units}u)`;
 
   result.innerHTML=
     "💧 Water: "+water.toFixed(2)+" ml<br>"+
     "📊 Concentration: "+conc.toFixed(2)+" mg/ml<br>"+
     "💉 Dose: "+ml.toFixed(2)+" ml ("+units+" units)";
+
+  saveHistory(last);
+  loadHistory();
+}
+
+function saveHistory(text){
+  let h=JSON.parse(localStorage.getItem("h")||"[]");
+  h.unshift(text);
+  h=h.slice(0,5);
+  localStorage.setItem("h",JSON.stringify(h));
+}
+
+function loadHistory(){
+  let h=JSON.parse(localStorage.getItem("h")||"[]");
+  if(h.length===0){
+    historyEl.innerHTML="No history yet.";
+    return;
+  }
+  historyEl.innerHTML=h.map((x,i)=>"#"+(i+1)+"<br>"+x).join("<br><br>");
 }
 
 function copyResult(){
-  if(!last) return;
-  navigator.clipboard.writeText(last);
+  if(last) navigator.clipboard.writeText(last);
 }
 
 function clearAll(){
@@ -207,6 +229,9 @@ const doseEl=document.getElementById("dose");
 const modeEl=document.getElementById("mode");
 const unitsEl=document.getElementById("units");
 const result=document.getElementById("result");
+const historyEl=document.getElementById("history");
+
+window.onload=loadHistory;
 </script>
 
 </body>
