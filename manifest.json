@@ -1,7 +1,7 @@
 {
-  "name": "Peptide Calculator",
-  "short_name": "Peptide",
-  "start_url": "peptide-calculator.html",
+  "name": "Peptide Smart Pro",
+  "short_name": "Smart Pro",
+  "start_url": "/peptideapp/index.html?v=2",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
