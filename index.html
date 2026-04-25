@@ -9,18 +9,18 @@
 <meta name="apple-mobile-web-app-title" content="Peptide Smart Pro">
 <link rel="apple-touch-icon" href="logo.png">
 
-<link rel="manifest" href="manifest.json?v=2">
+<link rel="manifest" href="manifest.json?v=3">
 <meta name="theme-color" content="#0f172a">
 
 <style>
 body{
   margin:0;
-  font-family:-apple-system, Arial;
+  font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;
   background:linear-gradient(135deg,#020617,#0f172a,#064e3b);
   color:white;
 }
 .container{
-  max-width:420px;
+  max-width:430px;
   margin:auto;
   padding:20px;
 }
@@ -30,8 +30,9 @@ body{
 }
 .logo{
   width:120px;
-  border-radius:20px;
+  border-radius:25px;
   animation:float 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px #22c55e);
 }
 @keyframes float{
   0%{transform:translateY(0)}
@@ -40,20 +41,35 @@ body{
 }
 h1{
   text-align:center;
-  margin-top:10px;
+  margin:10px 0 0;
+  font-size:30px;
+}
+.subtitle{
+  text-align:center;
+  color:#86efac;
+  letter-spacing:2px;
+  font-size:13px;
 }
 .card{
-  background:#111827;
+  background:rgba(15,23,42,.9);
+  border:1px solid rgba(34,197,94,.25);
+  border-radius:22px;
   padding:20px;
-  border-radius:20px;
-  margin-top:20px;
+  margin-top:18px;
+  box-shadow:0 0 25px rgba(34,197,94,.12);
+}
+label{
+  display:block;
+  margin-top:15px;
+  color:#5eead4;
+  font-weight:bold;
 }
 input,select,button{
   width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:10px;
-  border:none;
+  padding:14px;
+  margin-top:8px;
+  border-radius:14px;
+  border:1px solid rgba(94,234,212,.25);
   font-size:16px;
 }
 input,select{
@@ -61,15 +77,29 @@ input,select{
   color:white;
 }
 button{
-  background:#22c55e;
+  background:linear-gradient(135deg,#22c55e,#84cc16);
   color:black;
   font-weight:bold;
+  border:none;
+}
+.secondary{
+  background:#0f172a;
+  color:#86efac;
+  border:1px solid rgba(34,197,94,.35);
 }
 .result{
-  margin-top:15px;
+  margin-top:18px;
+  line-height:1.8;
   background:#020617;
-  padding:15px;
-  border-radius:15px;
+  padding:16px;
+  border-radius:18px;
+}
+.row{
+  display:flex;
+  gap:10px;
+}
+.row button{
+  flex:1;
 }
 </style>
 </head>
@@ -81,29 +111,40 @@ button{
 <div class="logo-wrap">
 <img src="logo.png" class="logo">
 <h1>Peptide Smart Pro</h1>
+<div class="subtitle">WATER • DOSE • UNITS</div>
 </div>
 
 <div class="card">
 
-<input id="total" type="number" placeholder="Total mg (e.g. 15)">
-<input id="dose" type="number" placeholder="Dose mg (e.g. 2)">
+<label>Total peptide (mg)</label>
+<input id="total" type="number" placeholder="15">
 
+<label>Desired dose (mg)</label>
+<input id="dose" type="number" placeholder="2">
+
+<label>Mode</label>
 <select id="mode">
-<option value="smart">Smart mode</option>
-<option value="manual">Manual mode</option>
+<option value="smart">Smart recommended units</option>
+<option value="manual">Manual</option>
 </select>
 
+<label>Units (U-100)</label>
 <select id="units">
-<option value="10">10 units</option>
-<option value="20" selected>20 units</option>
-<option value="30">30 units</option>
-<option value="40">40 units</option>
+<option value="10">10</option>
+<option value="20" selected>20</option>
+<option value="30">30</option>
+<option value="40">40</option>
 </select>
 
-<button onclick="calc()">Calculate</button>
+<button onclick="calc()">🧮 Calculate</button>
+
+<div class="row">
+<button class="secondary" onclick="copyResult()">Copy</button>
+<button class="secondary" onclick="clearAll()">Clear</button>
+</div>
 
 <div class="result" id="result">
-Enter values and press Calculate
+Enter values and press Calculate.
 </div>
 
 </div>
@@ -111,19 +152,21 @@ Enter values and press Calculate
 </div>
 
 <script>
-function smartUnits(dose){
-  if(dose<=0.5) return 10;
-  if(dose<=1) return 15;
-  if(dose<=2) return 20;
-  if(dose<=5) return 30;
+function smartUnits(d){
+  if(d<=0.5) return 10;
+  if(d<=1) return 15;
+  if(d<=2) return 20;
+  if(d<=5) return 30;
   return 40;
 }
 
+let last="";
+
 function calc(){
-  let total=parseFloat(document.getElementById("total").value);
-  let dose=parseFloat(document.getElementById("dose").value);
-  let mode=document.getElementById("mode").value;
-  let units=parseFloat(document.getElementById("units").value);
+  let total=parseFloat(totalEl.value);
+  let dose=parseFloat(doseEl.value);
+  let mode=modeEl.value;
+  let units=parseFloat(unitsEl.value);
 
   if(!total||!dose){
     result.innerHTML="Enter valid values";
@@ -134,15 +177,36 @@ function calc(){
     units=smartUnits(dose);
   }
 
-  let doseMl=units/100;
-  let concentration=dose/doseMl;
-  let water=total/concentration;
+  let ml=units/100;
+  let conc=dose/ml;
+  let water=total/conc;
+
+  last=`Water: ${water.toFixed(2)} ml
+Concentration: ${conc.toFixed(2)} mg/ml
+Dose: ${ml.toFixed(2)} ml (${units} units)`;
 
   result.innerHTML=
-    "Water: "+water.toFixed(2)+" ml<br>"+
-    "Concentration: "+concentration.toFixed(2)+" mg/ml<br>"+
-    "Dose: "+doseMl.toFixed(2)+" ml ("+units+" units)";
+    "💧 Water: "+water.toFixed(2)+" ml<br>"+
+    "📊 Concentration: "+conc.toFixed(2)+" mg/ml<br>"+
+    "💉 Dose: "+ml.toFixed(2)+" ml ("+units+" units)";
 }
+
+function copyResult(){
+  if(!last) return;
+  navigator.clipboard.writeText(last);
+}
+
+function clearAll(){
+  totalEl.value="";
+  doseEl.value="";
+  result.innerHTML="Enter values and press Calculate.";
+}
+
+const totalEl=document.getElementById("total");
+const doseEl=document.getElementById("dose");
+const modeEl=document.getElementById("mode");
+const unitsEl=document.getElementById("units");
+const result=document.getElementById("result");
 </script>
 
 </body>
